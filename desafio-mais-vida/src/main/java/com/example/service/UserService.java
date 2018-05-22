@@ -7,15 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.config.ApplicationConfigurationProperties;
 import com.example.entities.User;
 import com.example.repository.UserRepository;
 
 @Service
 public class UserService {
 	
-	@Autowired
-    private ApplicationConfigurationProperties configurationProperties;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -34,8 +31,8 @@ public class UserService {
         user.setPassword(
                 encryptPassword(user.getPassword())
         );
-
-        user.setRoles(configurationProperties.getDefaultUserRoles());
+        String[] roles = {"ROLE_ADMIN"};
+        user.setRoles(roles);
         return userRepository.save(user);
     }
 

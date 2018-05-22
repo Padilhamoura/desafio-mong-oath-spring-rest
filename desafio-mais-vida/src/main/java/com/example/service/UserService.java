@@ -1,11 +1,13 @@
 package com.example.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.config.ApplicationConfigurationProperties;
 import com.example.entities.User;
 import com.example.repository.UserRepository;
 
@@ -23,49 +25,23 @@ public class UserService {
         return userRepository.findByUserName(userName);
     }
 
-    public User save(CreateUserDto createUserDto) {
-        User user = new User();
-        updateUser(user, createUserDto);
-
-        return userRepository.save(user);
-    }
-
-    public User save(ModifyUserDto modifyUserDto, String userName) throws UpdatedUserNotFoundException {
-        Optional<User> userOptional = userRepository.findByUserName(userName);
-
-        if (!userOptional.isPresent()) {
-            throw new UpdatedUserNotFoundException(userName);
+    public User save(User user) throws Exception {
+    	Optional<User> userOptional = userRepository.findByUserName(user.getUserName());
+    	if (userOptional.isPresent()) {
+            throw new Exception("Usuário existente");
         }
 
-        User user = userOptional.get();
-        updateUser(user, modifyUserDto);
-
-        return userRepository.save(user);
-    }
-
-    public void delete(User user) {
-        timeEntryRepository.deleteByUserName(user.getUserName());
-        userRepository.delete(user);
-    }
-
-    private void updateUser(User user, CreateUserDto userDto) {
-        user.setFullName(userDto.getFullName());
-        user.setUserName(userDto.getUserName());
         user.setPassword(
-                encryptPassword(userDto.getPassword())
+                encryptPassword(user.getPassword())
         );
 
         user.setRoles(configurationProperties.getDefaultUserRoles());
+        return userRepository.save(user);
     }
 
-    private void updateUser(User user, ModifyUserDto userDto) {
-        user.setFullName(userDto.getFullName());
-        if (!StringUtils.isEmpty(userDto.getPassword())) {
-            user.setPassword(
-                    encryptPassword(userDto.getPassword())
-            );
-        }
-        user.setRoles(userDto.getRoles());
+
+    public void delete(User user) {
+        userRepository.delete(user);
     }
 
     private String encryptPassword(String password) {
@@ -76,14 +52,4 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-
-    @Autowired
-    public void setTimeEntryRepository(TimeEntryRepository timeEntryRepository) {
-        this.timeEntryRepository = timeEntryRepository;
-    }
 }

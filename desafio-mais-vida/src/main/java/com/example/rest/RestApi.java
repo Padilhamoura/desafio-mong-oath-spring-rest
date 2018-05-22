@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RestApi {
-	@RequestMapping("/user")
+	@RequestMapping("/userApi")
 	public Principal user(Principal principal) {
 		return principal;
 	}

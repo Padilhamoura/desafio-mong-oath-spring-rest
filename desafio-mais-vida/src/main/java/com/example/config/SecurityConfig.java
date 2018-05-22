@@ -30,7 +30,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService());
     }
 
-
     
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
@@ -40,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.antMatcher("/**")
 		.authorizeRequests()
-        .antMatchers("/", "/login**", "/webjars/**", "/error**")
+        .antMatchers("/", "/login**", "/webjars/**", "/error**", "/user**")
         .permitAll()
         .anyRequest()
         .authenticated()

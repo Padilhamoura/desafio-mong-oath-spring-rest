@@ -31,6 +31,7 @@ public class RestApi {
 		User user = new User();
 		user.setUserName("Admin");
 		user.setPassword("123456");
+		
 		try {
 			userservice.save(user);
 		} catch (Exception e) {
